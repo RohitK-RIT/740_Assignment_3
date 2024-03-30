@@ -33,6 +33,8 @@ public:
 	vec3* fnormals; // normals of triangles, size = # of triangles
 	vec3* vnormals; // normal of vertices, computed by averaging the adajecent traingle normals; size = # of vertices
 
+	vec3* position; // positions of mesh in the world space.
+
 	GLuint vao, vbo, nbo, ibo;
 	ShaderProgram shaderProg;
 	ShaderClass vShader;
@@ -48,7 +50,7 @@ public:
 	/* Load the mesh from an '.obj' file. All faces need to be triangles.
 	   Attributes like edge lengths and curvatures should be computed when simplifying the mesh.
 	*/
-	void create(const char* filename, const char* v_shader_file, const char* f_shader_file);
+	void create(const char* filename, vec3* position, const char* v_shader_file, const char* f_shader_file);
 
 	void draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time);
 

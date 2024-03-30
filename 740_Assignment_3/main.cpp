@@ -58,7 +58,7 @@ const char meshFile[128] =
 	"Mesh/teapot.obj";
 //"Mesh/teddy.obj";
 
-Mesh g_mesh;
+Mesh g_mesh, g_mesh2;
 
 vec3 g_lightPos = vec3(3, 3, 3);
 float g_time = 0.0f;
@@ -68,7 +68,8 @@ void initialization()
 	g_cam.set(1.0f, 2.0f, 4.0f, 0.0f, 1.0f, -0.5f, g_winWidth, g_winHeight);
 	g_text.setColor(0.0f, 0.0f, 0.0f);
 
-	g_mesh.create(meshFile, v_shader_file, f_shader_file);
+	g_mesh.create(meshFile, new vec3(1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
+	g_mesh2.create(meshFile, new vec3(-1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
 	// add any stuff you want to initialize ...
 }
 
@@ -131,6 +132,7 @@ void display()
 
 	g_time = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	g_mesh.draw(g_cam.viewMat, g_cam.projMat, g_lightPos, g_time);
+	g_mesh2.draw(g_cam.viewMat, g_cam.projMat, g_lightPos, g_time);
 
 	glutSwapBuffers();
 }

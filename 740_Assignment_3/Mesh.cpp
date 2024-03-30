@@ -114,8 +114,10 @@ void Mesh::prepareVBOandShaders(const char* v_shader_file, const char* f_shader_
 	glEnableVertexAttribArray(1);
 }
 
-void Mesh::create(const char* filename, const char* v_shader_file, const char* f_shader_file)
+void Mesh::create(const char* filename, vec3* position, const char* v_shader_file, const char* f_shader_file)
 {
+	this->position = position; // Set the position of the mesh in the world space.
+	
 	vector<vec3> ori_vertices;
 	vector<uvec3> ori_triangles;
 
@@ -151,7 +153,7 @@ void Mesh::create(const char* filename, const char* v_shader_file, const char* f
 				iss >> index[1];
 				iss >> index[2];
 				// NOTE: index in obj files starts from 1
-				ori_triangles.push_back(uvec3(index[0] - 1, index[1] - 1, index[2] - 1));
+				ori_triangles.emplace_back(index[0] - 1, index[1] - 1, index[2] - 1);
 				break;
 			}
 		default:
@@ -200,7 +202,7 @@ void Mesh::draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time)
 
 
 	glUseProgram(shaderProg.id);
-	mat4 m = translate(mat4(1.0), vec3(0.0f, 2.0f, 0.0f));
+	mat4 m = translate(mat4(1.0), *position);
 	modelMat = scale(m, vec3(0.3f, 0.3f, 0.3f));
 	shaderProg.setMatrix4fv("modelMat", 1, value_ptr(modelMat));
 	shaderProg.setMatrix4fv("viewMat", 1, value_ptr(viewMat));
