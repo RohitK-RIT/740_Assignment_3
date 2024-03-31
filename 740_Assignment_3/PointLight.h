@@ -22,5 +22,5 @@ public:
 	~PointLight();
 	
 	void create(const glm::vec3& position, const glm::vec3& color, const float intensity, const char* v_shader_file, const char* f_shader_file);
-	void draw(glm::mat4 view_mat, glm::mat4 proj_mat);
+	void draw(glm::mat4 view_mat, glm::mat4 proj_mat, bool is_selected);
 };

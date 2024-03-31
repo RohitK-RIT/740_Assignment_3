@@ -9,6 +9,10 @@
 #include "Camera.h"
 #include "Camera.h"
 #include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
 
 PointLight::PointLight()
 {
@@ -34,15 +38,16 @@ void PointLight::create(const glm::vec3& position, const glm::vec3& color, const
 	this->intensity = intensity;
 }
 
-void PointLight::draw(mat4 view_mat, mat4 proj_mat)
+void PointLight::draw(mat4 view_mat, mat4 proj_mat, bool is_selected)
 {
+	cout << "PointLight is selected " << is_selected << '\n';
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT, GL_FILL);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -54,16 +59,13 @@ void PointLight::draw(mat4 view_mat, mat4 proj_mat)
 	shader_program.setMatrix4fv("viewMat", 1, value_ptr(view_mat));
 	shader_program.setMatrix4fv("projMat", 1, value_ptr(proj_mat));
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glutSolidSphere(0.5f, 50, 50);
+	if (is_selected)
+		glutSolidSphere(0.5f, 20, 20);
+	else
+		glutWireSphere(0.5f, 20, 20);
 
 	glPopMatrix();
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	glPopMatrix();
-	// glMatrixMode(GL_MODELVIEW);
-	// glPushMatrix();
-	// glTranslatef(transform.position.x, transform.position.y, transform.position.z);
-	// glColor3f(1.0f, 0.0f, 0.0f);
-	// glutSolidSphere(0.5f, 50, 50);
-	// glPopMatrix();
 }

@@ -48,16 +48,16 @@ char f_shader_file[] =
 
 char v_shader_file_s[] =
 	".\\shaders\\basic.vert";
-	//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
-	//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
-	// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
+//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
+//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
+// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
 // ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
 
 char f_shader_file_s[] =
 	".\\shaders\\basic.frag";
-	// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
-	// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
-	// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
+// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
+// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
+// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
 // ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
 
 constexpr char teapot_mesh_file[128] = "Mesh/teapot.obj";
@@ -77,6 +77,7 @@ void initialization()
 	teapot2.create(teapot_mesh_file, vec3(-1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
 
 	light1.create(vec3(3, 3, 3), vec3(1.0f, 1.0f, 1.0f), 1, v_shader_file_s, f_shader_file_s);
+	light2.create(vec3(-3, 3, 3), vec3(1.0f, 1.0f, 1.0f), 1, v_shader_file_s, f_shader_file_s);
 	// add any stuff you want to initialize ...
 }
 
@@ -119,9 +120,9 @@ void display()
 	cam.drawCoordinateOnScreen(win_width, win_height);
 	cam.drawCoordinate();
 
-	light1.draw(cam.viewMat, cam.projMat);
-	// light2.draw();
-	
+	light1.draw(cam.viewMat, cam.projMat, selected_light == &light1);
+	light2.draw(cam.viewMat, cam.projMat, selected_light == &light2);
+
 	time_elapsed = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	teapot1.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
 	teapot2.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
