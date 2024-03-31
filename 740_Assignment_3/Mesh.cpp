@@ -5,21 +5,21 @@ Mesh::Mesh()
 {
 	vert_num = tri_num = 0;
 	vao = vbo = nbo = ibo = 0;
-	modelMat = mat4(1.0f);
+	model_mat = mat4(1.0f);
 }
 
 Mesh::~Mesh()
 {
 	delete[] vertices;
 	delete[] triangles;
-	delete[] fnormals;
-	delete[] vnormals;
+	delete[] f_normals;
+	delete[] v_normals;
 }
 
 void Mesh::computeNormals()
 {
-	fnormals = new vec3[tri_num];
-	vnormals = new vec3[vert_num];
+	f_normals = new vec3[tri_num];
+	v_normals = new vec3[vert_num];
 
 	vec3 a, b, n;
 
@@ -30,39 +30,39 @@ void Mesh::computeNormals()
 		b = vertices[triangles[i][2]] - vertices[triangles[i][0]];
 
 		n = cross(a, b);
-		fnormals[i] = normalize(n);
+		f_normals[i] = normalize(n);
 	}
 
 	// Compute vertex normals
 	for (unsigned int i = 0; i < vert_num; i++)
 	{
-		vnormals[i] = vec3(0.0f);
+		v_normals[i] = vec3(0.0f);
 	}
 
 	for (unsigned int i = 0; i < tri_num; i++)
 	{
 		for (unsigned int j = 0; j < 3; j++)
 		{
-			vnormals[triangles[i][j]] += fnormals[i];
+			v_normals[triangles[i][j]] += f_normals[i];
 		}
 	}
 
 	for (unsigned int i = 0; i < vert_num; i++)
 	{
-		vnormals[i] = normalize(vnormals[i]);
+		v_normals[i] = normalize(v_normals[i]);
 	}
 }
 
 void Mesh::prepareVBOandShaders(const char* v_shader_file, const char* f_shader_file)
 {
-	vShader.create(v_shader_file, GL_VERTEX_SHADER);
-	fShader.create(f_shader_file, GL_FRAGMENT_SHADER);
-	shaderProg.create();
-	shaderProg.link(vShader);
-	shaderProg.link(fShader);
+	v_shader.create(v_shader_file, GL_VERTEX_SHADER);
+	f_shader.create(f_shader_file, GL_FRAGMENT_SHADER);
+	shader_program.create();
+	shader_program.link(v_shader);
+	shader_program.link(f_shader);
 
-	vShader.destroy();
-	fShader.destroy();
+	v_shader.destroy();
+	f_shader.destroy();
 
 	// create vbo 
 	// generate a new VBO and get the associated ID
@@ -82,7 +82,7 @@ void Mesh::prepareVBOandShaders(const char* v_shader_file, const char* f_shader_
 
 	glGenBuffers(1, &nbo);
 	glBindBuffer(GL_ARRAY_BUFFER, nbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * vert_num, vnormals, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * vert_num, v_normals, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0); // clean up
 	// delete[] vnormals; // commented out, since it's handled by the destructor
 
@@ -114,9 +114,9 @@ void Mesh::prepareVBOandShaders(const char* v_shader_file, const char* f_shader_
 	glEnableVertexAttribArray(1);
 }
 
-void Mesh::create(const char* filename, vec3* position, const char* v_shader_file, const char* f_shader_file)
+void Mesh::create(const char* filename, const vec3& position, const char* v_shader_file, const char* f_shader_file)
 {
-	this->position = position; // Set the position of the mesh in the world space.
+	Object::create(position);
 	
 	vector<vec3> ori_vertices;
 	vector<uvec3> ori_triangles;
@@ -185,35 +185,29 @@ void Mesh::create(const char* filename, vec3* position, const char* v_shader_fil
 
 void Mesh::draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-
 	if (vert_num <= 0 && tri_num <= 0)
 		return;
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT, GL_FILL);
-
-
+	
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-
-
-	glUseProgram(shaderProg.id);
-	mat4 m = translate(mat4(1.0), *position);
-	modelMat = scale(m, vec3(0.3f, 0.3f, 0.3f));
-	shaderProg.setMatrix4fv("modelMat", 1, value_ptr(modelMat));
-	shaderProg.setMatrix4fv("viewMat", 1, value_ptr(viewMat));
-	shaderProg.setMatrix4fv("projMat", 1, value_ptr(projMat));
-	shaderProg.setFloat3V("lightPos", 1, value_ptr(lightPos));
-	shaderProg.setFloat("time", time);
-	shaderProg.setFloat("offset", normal_offset);
-
-	//cout << glm::to_string(modelMat) << endl;
-	//cout << glm::to_string(viewMat) << endl;
-	//cout << glm::to_string(projMat) << endl;
+	
+	glUseProgram(shader_program.id);
+	mat4 m = translate(mat4(1.0), transform.position);
+	model_mat = scale(m, vec3(0.3f, 0.3f, 0.3f));
+	shader_program.setMatrix4fv("modelMat", 1, value_ptr(model_mat));
+	shader_program.setMatrix4fv("viewMat", 1, value_ptr(viewMat));
+	shader_program.setMatrix4fv("projMat", 1, value_ptr(projMat));
+	shader_program.setFloat3V("lightPos", 1, value_ptr(lightPos));
+	shader_program.setFloat("time", time);
+	shader_program.setFloat("offset", normal_offset);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glDrawElements(GL_TRIANGLES, tri_num * 3, GL_UNSIGNED_INT, NULL);

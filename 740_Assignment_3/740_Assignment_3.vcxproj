@@ -22,15 +22,20 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="Text.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mesh\bunny2k.obj" />

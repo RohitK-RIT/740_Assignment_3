@@ -16,27 +16,21 @@
 #else
 #include <GL/freeglut.h>
 #endif
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/constants.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include "Camera.h"
-#include "Text.h"
 #include "Mesh.h"
+#include "PointLight.h"
 
-#include <iostream>
 using namespace std;
 using namespace glm;
 
-int g_winWidth = 1024;
-int g_winHeight = 512;
+int win_width = 1024;
+int win_height = 512;
 
-Camera g_cam;
-Text g_text;
+Camera cam;
 
-unsigned char g_keyStates[256];
+unsigned char key_states[256];
 
 char v_shader_file[] =
 	//".\\shaders\\basic.vert";
@@ -52,24 +46,37 @@ char f_shader_file[] =
 	".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
 // ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
 
-const char meshFile[128] =
-	// "Mesh/sphere.obj";
-	//"Mesh/bunny2K.obj";
-	"Mesh/teapot.obj";
-//"Mesh/teddy.obj";
+char v_shader_file_s[] =
+	".\\shaders\\basic.vert";
+	//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
+	//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
+	// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
+// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
 
-Mesh g_mesh, g_mesh2;
+char f_shader_file_s[] =
+	".\\shaders\\basic.frag";
+	// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
+	// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
+	// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
+// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
 
-vec3 g_lightPos = vec3(3, 3, 3);
-float g_time = 0.0f;
+constexpr char teapot_mesh_file[128] = "Mesh/teapot.obj";
+
+Mesh teapot1, teapot2;
+PointLight light1, light2;
+PointLight* selected_light = &light1;
+
+// vec3 light1_pos = vec3(3, 3, 3);
+float time_elapsed = 0.0f;
 
 void initialization()
 {
-	g_cam.set(1.0f, 2.0f, 4.0f, 0.0f, 1.0f, -0.5f, g_winWidth, g_winHeight);
-	g_text.setColor(0.0f, 0.0f, 0.0f);
+	cam.set(1.0f, 2.0f, 4.0f, 0.0f, 1.0f, -0.5f, win_width, win_height);
 
-	g_mesh.create(meshFile, new vec3(1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
-	g_mesh2.create(meshFile, new vec3(-1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
+	teapot1.create(teapot_mesh_file, vec3(1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
+	teapot2.create(teapot_mesh_file, vec3(-1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
+
+	light1.create(vec3(3, 3, 3), vec3(1.0f, 1.0f, 1.0f), 1, v_shader_file_s, f_shader_file_s);
 	// add any stuff you want to initialize ...
 }
 
@@ -92,7 +99,7 @@ void idle()
 {
 	// add any stuff to update at runtime ....
 
-	g_cam.keyOperation(g_keyStates, g_winWidth, g_winHeight);
+	cam.keyOperation(key_states, win_width, win_height);
 
 	glutPostRedisplay();
 }
@@ -108,83 +115,86 @@ void display()
 	glDisable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 
-	g_cam.drawGrid();
-	g_cam.drawCoordinateOnScreen(g_winWidth, g_winHeight);
-	g_cam.drawCoordinate();
+	cam.drawGrid();
+	cam.drawCoordinateOnScreen(win_width, win_height);
+	cam.drawCoordinate();
 
-	// display the text
-	string str;
-	if (g_cam.isFocusMode())
-	{
-		str = "Cam mode: Focus";
-		g_text.draw(10, 30, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
-	}
-	else if (g_cam.isFPMode())
-	{
-		str = "Cam mode: FP";
-		g_text.draw(10, 30, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
-	}
-	str = "vertex count: " + std::to_string(g_mesh.vert_num);
-	g_text.draw(10, 45, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
-	str = "triangle count: " + std::to_string(g_mesh.tri_num);
-	g_text.draw(10, 60, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
-
-
-	g_time = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	g_mesh.draw(g_cam.viewMat, g_cam.projMat, g_lightPos, g_time);
-	g_mesh2.draw(g_cam.viewMat, g_cam.projMat, g_lightPos, g_time);
+	light1.draw(cam.viewMat, cam.projMat);
+	// light2.draw();
+	
+	time_elapsed = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	teapot1.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
+	teapot2.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
 
 	glutSwapBuffers();
 }
 
 void reshape(int w, int h)
 {
-	g_winWidth = w;
-	g_winHeight = h;
+	win_width = w;
+	win_height = h;
 	if (h == 0)
 	{
 		h = 1;
 	}
-	g_cam.setProjectionMatrix(g_winWidth, g_winHeight);
-	g_cam.setViewMatrix();
+	cam.setProjectionMatrix(win_width, win_height);
+	cam.setViewMatrix();
 	glViewport(0, 0, w, h);
 }
 
 void mouse(int button, int state, int x, int y)
 {
-	g_cam.mouseClick(button, state, x, y, g_winWidth, g_winHeight);
+	cam.mouseClick(button, state, x, y, win_width, win_height);
 }
 
 void motion(int x, int y)
 {
-	g_cam.mouseMotion(x, y, g_winWidth, g_winHeight);
+	cam.mouseMotion(x, y, win_width, win_height);
 }
 
 void keyup(unsigned char key, int x, int y)
 {
-	g_keyStates[key] = false;
+	key_states[key] = false;
 }
 
 void keyboard(unsigned char key, int x, int y)
 {
-	g_keyStates[key] = true;
+	key_states[key] = true;
 	switch (key)
 	{
 	case 27:
 		exit(0);
-		break;
-	case 'c': // switch cam control mode
-		g_cam.switchCamMode();
-		glutPostRedisplay();
-		break;
 	case ' ':
-		g_cam.PrintProperty();
+		cam.PrintProperty();
 		break;
-	case '+':
-		g_mesh.normal_offset += 0.01;
+
+	// Light movement
+	case 'w':
+		selected_light->transform.position.z += 0.1f;
 		break;
-	case'-':
-		g_mesh.normal_offset -= 0.01;
+	case 's':
+		selected_light->transform.position.z -= 0.1f;
+		break;
+	case 'a':
+		selected_light->transform.position.x -= 0.1f;
+		break;
+	case 'd':
+		selected_light->transform.position.x += 0.1f;
+		break;
+	case 'u':
+		selected_light->transform.position.y += 0.1f;
+		break;
+	case 'j':
+		selected_light->transform.position.y -= 0.1f;
+		break;
+
+	// Light selection
+	case '1':
+		selected_light = &light1;
+		break;
+	case '2':
+		selected_light = &light2;
+		break;
 	}
 }
 
@@ -192,7 +202,7 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(g_winWidth, g_winHeight);
+	glutInitWindowSize(win_width, win_height);
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("VertFrag Shader Example");
 
