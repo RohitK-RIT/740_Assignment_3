@@ -41,7 +41,7 @@ char teapot2_f_shader_file[] = ".\\shaders\\perFrag_phong.frag"; // basic phong 
 char light_v_shader_file[] = ".\\shaders\\basic.vert";
 char light_f_shader_file[] = ".\\shaders\\basic.frag";
 
-constexpr char teapot_mesh_file[128] = "Mesh/teapot.obj";
+constexpr char teapot_mesh_file[128] = ".\\Mesh\\teapot.obj";
 
 Mesh teapot1, teapot2;
 PointLight light1, light2;
