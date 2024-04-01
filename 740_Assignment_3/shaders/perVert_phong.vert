@@ -30,6 +30,8 @@ out vec3 color;
 
 void main() {
     color = vec3(0.0);// Reset color before calculating
+    
+    // Transform vertex position and normal to world space
     vec3 world_pos = (modelMat * vec4 (vertex_position, 1.0f)).xyz;
     vec3 world_normal = (modelMat * vec4 (vertex_normal, 0.0f)).xyz;
 
@@ -48,8 +50,10 @@ void main() {
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), lights[i].falloff_power);
         vec3 Specular = specular_coefficient * spec * lights[i].specular_color;
 
+        // Add all components
         color += Ambient + Diffuse + Specular;
     }
 
+    // Transform vertex position to clip space
     gl_Position = projMat * viewMat * modelMat * vec4(vertex_position, 1.0f);
 }

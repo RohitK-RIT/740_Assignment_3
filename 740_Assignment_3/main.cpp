@@ -32,35 +32,14 @@ Camera cam;
 
 unsigned char key_states[256];
 
-char v_shader_file[] =
-	//".\\shaders\\basic.vert";
-	//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
-	//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
-	// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
-	// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
-	".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
+char teapot1_v_shader_file[] = ".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
+char teapot1_f_shader_file[] = ".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
 
-char f_shader_file[] =
-	//".\\shaders\\basic.frag";
-	// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
-	// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
-	// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
-	// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
-	".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
+char teapot2_v_shader_file[] = ".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
+char teapot2_f_shader_file[] = ".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
 
-char v_shader_file_s[] =
-	".\\shaders\\basic.vert";
-//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
-//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
-// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
-// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
-
-char f_shader_file_s[] =
-	".\\shaders\\basic.frag";
-// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
-// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
-// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
-// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
+char light_v_shader_file[] = ".\\shaders\\basic.vert";
+char light_f_shader_file[] = ".\\shaders\\basic.frag";
 
 constexpr char teapot_mesh_file[128] = "Mesh/teapot.obj";
 
@@ -75,16 +54,16 @@ void initialization()
 {
 	cam.set(3.0f, 4.0f, 14.0f, 0.0f, 1.0f, -0.5f, win_width, win_height);
 
-	teapot1.create(teapot_mesh_file, vec3(0.0f, 2.0f, 0.0f), vec3(0.5f), v_shader_file, f_shader_file);
-	teapot2.create(teapot_mesh_file, vec3(3.0f, 2.0f, 0.0f), vec3(0.5f), v_shader_file, f_shader_file);
+	teapot1.create(teapot_mesh_file, vec3(0.0f, 2.0f, 0.0f), vec3(0.5f), teapot1_v_shader_file, teapot1_f_shader_file);
+	teapot2.create(teapot_mesh_file, vec3(3.0f, 2.0f, 0.0f), vec3(0.5f), teapot2_v_shader_file, teapot2_f_shader_file);
 
 	light1.create(vec3(3.0f, 3.0f, 3.0f), vec3(1.0f, 1.0f, 1.0f),
 	              vec3(0.0f, 0.15f, 0.0f), vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 10,
-	              0.5f, v_shader_file_s, f_shader_file_s);
+	              0.5f, light_v_shader_file, light_f_shader_file);
 	light2.create(vec3(1.0f, 0.0f, -2.0f), vec3(1.0f, 1.0f, 1.0f),
 	              vec3(0.0f, 0.0f, 0.15f), vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 0.0f), 10,
-	              0.5f, v_shader_file_s, f_shader_file_s);
-	
+	              0.5f, light_v_shader_file, light_f_shader_file);
+
 	// add any stuff you want to initialize ...
 }
 
