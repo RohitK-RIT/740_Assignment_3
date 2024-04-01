@@ -48,6 +48,8 @@
     <Content Include="shaders\displacement.vert" />
     <Content Include="shaders\perFrag_lambert.frag" />
     <Content Include="shaders\perFrag_lambert.vert" />
+    <Content Include="shaders\perFrag_phong.frag" />
+    <Content Include="shaders\perFrag_phong.vert" />
     <Content Include="shaders\perVert_lambert.frag" />
     <Content Include="shaders\perVert_lambert.vert" />
     <Content Include="shaders\perVert_phong.vert" />

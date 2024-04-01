@@ -35,8 +35,8 @@ unsigned char key_states[256];
 char teapot1_v_shader_file[] = ".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
 char teapot1_f_shader_file[] = ".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
 
-char teapot2_v_shader_file[] = ".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
-char teapot2_f_shader_file[] = ".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
+char teapot2_v_shader_file[] = ".\\shaders\\perFrag_phong.vert"; // basic phong shading with per-vertex implementation
+char teapot2_f_shader_file[] = ".\\shaders\\perFrag_phong.frag"; // basic phong shading with per-vertex implementation
 
 char light_v_shader_file[] = ".\\shaders\\basic.vert";
 char light_f_shader_file[] = ".\\shaders\\basic.frag";
