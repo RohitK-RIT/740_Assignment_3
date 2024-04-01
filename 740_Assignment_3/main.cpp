@@ -85,9 +85,6 @@ void initialGL()
 void idle()
 {
 	// add any stuff to update at runtime ....
-
-	cam.keyOperation(key_states, win_width, win_height);
-
 	glutPostRedisplay();
 }
 

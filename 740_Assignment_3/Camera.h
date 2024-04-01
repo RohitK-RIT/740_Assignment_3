@@ -34,10 +34,6 @@ private:
 
 	vec2 key_pos; // the translated step changed by keyboard operation in FP cam mode
 	vec2 key_pre_pos;
-	bool m_altKey; // detect if ALT pressed 
-
-
-	int m_mode;
 
 	// View Frustum
 	vec4 ntl; // the near-top-left
@@ -52,8 +48,6 @@ private:
 	// scale parameters for the camera control
 	float M_ZOOM_PAR;
 	float M_PAN_PAR;
-	float M_PAN_PAR_FP;
-	float M_ROTATE_PAR_FP;
 
 public:
 	Camera();
