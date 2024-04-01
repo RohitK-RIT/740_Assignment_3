@@ -156,10 +156,10 @@ void keyboard(unsigned char key, int x, int y)
 
 	// Light movement
 	case 'w':
-		selected_light->transform.position.z += 0.1f;
+		selected_light->transform.position.z -= 0.1f;
 		break;
 	case 's':
-		selected_light->transform.position.z -= 0.1f;
+		selected_light->transform.position.z += 0.1f;
 		break;
 	case 'a':
 		selected_light->transform.position.x -= 0.1f;
