@@ -223,7 +223,6 @@ void Mesh::draw(mat4 viewMat, mat4 projMat, vector<PointLight*> lights, float ti
 	int size = lights.size();
 	for (int i = 0; i < size; i++)
 	{
-		// cout << "Light diff color: " << lights[i]->diffuse_color.x << " " << lights[i]->diffuse_color.y << " " << lights[i]->diffuse_color.z << '\n';
 		std::string lightIndex = std::to_string(i);
 		shader_program.setFloat3V(("lights[" + lightIndex + "].position").c_str(), 1, value_ptr(lights[i]->transform.position));
 		shader_program.setFloat3V(("lights[" + lightIndex + "].ambient_color").c_str(), 1, value_ptr(lights[i]->ambient_color));
