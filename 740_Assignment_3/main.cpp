@@ -190,7 +190,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(win_width, win_height);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("VertFrag Shader Example");
+	glutCreateWindow("Phong Shader Demo");
 
 	glewInit();
 	initialGL();
