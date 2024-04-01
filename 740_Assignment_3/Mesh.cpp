@@ -1,5 +1,15 @@
 #include "Mesh.h"
 
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "Camera.h"
+#include "PointLight.h"
+
 
 Mesh::Mesh()
 {
@@ -108,16 +118,16 @@ void Mesh::prepareVBOandShaders(const char* v_shader_file, const char* f_shader_
 	glBindBuffer(GL_ARRAY_BUFFER, nbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL); // 1 - the layout id in fragment shader
 
-	// Ettributes are disabled by default in OpenGL 4. 
+	// Attributes are disabled by default in OpenGL 4. 
 	// We have to explicitly enable each one.
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 }
 
-void Mesh::create(const char* filename, const vec3& position, const char* v_shader_file, const char* f_shader_file)
+void Mesh::create(const char* filename, const vec3& position, const vec3& scale, const char* v_shader_file, const char* f_shader_file)
 {
-	Object::create(position);
-	
+	Object::create(position, vec3(0), scale);
+
 	vector<vec3> ori_vertices;
 	vector<uvec3> ori_triangles;
 
@@ -183,7 +193,7 @@ void Mesh::create(const char* filename, const vec3& position, const char* v_shad
 	prepareVBOandShaders(v_shader_file, f_shader_file);
 }
 
-void Mesh::draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time)
+void Mesh::draw(mat4 viewMat, mat4 projMat, vector<PointLight*> lights, float time)
 {
 	if (vert_num <= 0 && tri_num <= 0)
 		return;
@@ -195,17 +205,34 @@ void Mesh::draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT, GL_FILL);
-	
+
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	
+
 	glUseProgram(shader_program.id);
 	mat4 m = translate(mat4(1.0), transform.position);
-	model_mat = scale(m, vec3(0.3f, 0.3f, 0.3f));
+	model_mat = scale(m, transform.scale);
 	shader_program.setMatrix4fv("modelMat", 1, value_ptr(model_mat));
 	shader_program.setMatrix4fv("viewMat", 1, value_ptr(viewMat));
 	shader_program.setMatrix4fv("projMat", 1, value_ptr(projMat));
-	shader_program.setFloat3V("lightPos", 1, value_ptr(lightPos));
+
+	shader_program.setFloat("ambient_coefficient", 1.0f);
+	shader_program.setFloat("diffuse_coefficient", 1.0f);
+	shader_program.setFloat("specular_coefficient", 1.0f);
+
+	int size = lights.size();
+	for (int i = 0; i < size; i++)
+	{
+		// cout << "Light diff color: " << lights[i]->diffuse_color.x << " " << lights[i]->diffuse_color.y << " " << lights[i]->diffuse_color.z << '\n';
+		std::string lightIndex = std::to_string(i);
+		shader_program.setFloat3V(("lights[" + lightIndex + "].position").c_str(), 1, value_ptr(lights[i]->transform.position));
+		shader_program.setFloat3V(("lights[" + lightIndex + "].ambient_color").c_str(), 1, value_ptr(lights[i]->ambient_color));
+		shader_program.setFloat3V(("lights[" + lightIndex + "].diffuse_color").c_str(), 1, value_ptr(lights[i]->diffuse_color));
+		shader_program.setFloat3V(("lights[" + lightIndex + "].specular_color").c_str(), 1, value_ptr(lights[i]->specular_color));
+		shader_program.setFloat(("lights[" + lightIndex + "].falloff_power").c_str(), lights[i]->falloff_power);
+	}
+	shader_program.setInt("num_lights", size);
+
 	shader_program.setFloat("time", time);
 	shader_program.setFloat("offset", normal_offset);
 

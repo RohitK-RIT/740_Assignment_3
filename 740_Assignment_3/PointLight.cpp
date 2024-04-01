@@ -5,14 +5,6 @@
 #include <GL/freeglut_std.h>
 
 #include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
 
 PointLight::PointLight()
 {
@@ -21,9 +13,15 @@ PointLight::PointLight()
 
 PointLight::~PointLight() {}
 
-void PointLight::create(const glm::vec3& position, const glm::vec3& color, const float intensity, const char* v_shader_file, const char* f_shader_file)
+void PointLight::create(const vec3& position, const vec3& color, vec3 ambient_color, vec3 diffuse_color, vec3 specular_color, float falloff_power, const float intensity,
+                        const char* v_shader_file, const char* f_shader_file)
 {
 	Object::create(position);
+
+	this->ambient_color = ambient_color;
+	this->diffuse_color = diffuse_color;
+	this->specular_color = specular_color;
+	this->falloff_power = falloff_power;
 
 	v_shader.create(v_shader_file, GL_VERTEX_SHADER);
 	f_shader.create(f_shader_file, GL_FRAGMENT_SHADER);
@@ -40,7 +38,6 @@ void PointLight::create(const glm::vec3& position, const glm::vec3& color, const
 
 void PointLight::draw(mat4 view_mat, mat4 proj_mat, bool is_selected)
 {
-	cout << "PointLight is selected " << is_selected << '\n';
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 

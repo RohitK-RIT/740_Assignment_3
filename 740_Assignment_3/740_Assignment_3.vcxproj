@@ -50,6 +50,8 @@
     <Content Include="shaders\perFrag_lambert.vert" />
     <Content Include="shaders\perVert_lambert.frag" />
     <Content Include="shaders\perVert_lambert.vert" />
+    <Content Include="shaders\perVert_phong.vert" />
+    <Content Include="shaders\perVert_phong.frag" />
     <Content Include="shaders\toon_shading.frag" />
     <Content Include="shaders\toon_shading.vert" />
   </ItemGroup>

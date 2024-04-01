@@ -10,8 +10,12 @@ class PointLight : public Object
 {
 public:
 	glm::vec3 color;
+	glm::vec3 ambient_color;
+	glm::vec3 diffuse_color;
+	glm::vec3 specular_color;
+	float falloff_power;
 	float intensity;
-	
+
 	ShaderProgram shader_program;
 	ShaderClass v_shader;
 	ShaderClass f_shader;
@@ -20,7 +24,8 @@ public:
 
 	PointLight();
 	~PointLight();
-	
-	void create(const glm::vec3& position, const glm::vec3& color, const float intensity, const char* v_shader_file, const char* f_shader_file);
+
+	void create(const glm::vec3& position, const glm::vec3& color, glm::vec3 ambient_color, glm::vec3 diffuse_color, glm::vec3 specular_color, float falloff_power, const float intensity,
+	            const char* v_shader_file, const char* f_shader_file);
 	void draw(glm::mat4 view_mat, glm::mat4 proj_mat, bool is_selected);
 };

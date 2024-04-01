@@ -36,15 +36,17 @@ char v_shader_file[] =
 	//".\\shaders\\basic.vert";
 	//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
 	//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
-	".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
-// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
+	// ".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
+	// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
+	".\\shaders\\perVert_phong.vert"; // basic phong shading with per-vertex implementation
 
 char f_shader_file[] =
 	//".\\shaders\\basic.frag";
 	// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
 	// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
-	".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
-// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
+	// ".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
+	// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
+	".\\shaders\\perVert_phong.frag"; // basic phong shading with per-vertex implementation
 
 char v_shader_file_s[] =
 	".\\shaders\\basic.vert";
@@ -71,13 +73,18 @@ float time_elapsed = 0.0f;
 
 void initialization()
 {
-	cam.set(1.0f, 2.0f, 4.0f, 0.0f, 1.0f, -0.5f, win_width, win_height);
+	cam.set(3.0f, 4.0f, 14.0f, 0.0f, 1.0f, -0.5f, win_width, win_height);
 
-	teapot1.create(teapot_mesh_file, vec3(1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
-	teapot2.create(teapot_mesh_file, vec3(-1.0f, 0.0f, 0.0f), v_shader_file, f_shader_file);
+	teapot1.create(teapot_mesh_file, vec3(0.0f, 2.0f, 0.0f), vec3(0.5f), v_shader_file, f_shader_file);
+	teapot2.create(teapot_mesh_file, vec3(3.0f, 2.0f, 0.0f), vec3(0.5f), v_shader_file, f_shader_file);
 
-	light1.create(vec3(3, 3, 3), vec3(1.0f, 1.0f, 1.0f), 1, v_shader_file_s, f_shader_file_s);
-	light2.create(vec3(-3, 3, 3), vec3(1.0f, 1.0f, 1.0f), 1, v_shader_file_s, f_shader_file_s);
+	light1.create(vec3(3.0f, 3.0f, 3.0f), vec3(1.0f, 1.0f, 1.0f),
+	              vec3(0.0f, 0.15f, 0.0f), vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 10,
+	              0.5f, v_shader_file_s, f_shader_file_s);
+	light2.create(vec3(1.0f, 0.0f, -2.0f), vec3(1.0f, 1.0f, 1.0f),
+	              vec3(0.0f, 0.0f, 0.15f), vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 0.0f), 10,
+	              0.5f, v_shader_file_s, f_shader_file_s);
+	
 	// add any stuff you want to initialize ...
 }
 
@@ -110,8 +117,6 @@ void display()
 	glClearColor(1.0, 1.0, 1.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// add any stuff you'd like to draw	
-
 	glUseProgram(0);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
@@ -123,9 +128,13 @@ void display()
 	light1.draw(cam.viewMat, cam.projMat, selected_light == &light1);
 	light2.draw(cam.viewMat, cam.projMat, selected_light == &light2);
 
+	vector<PointLight*> lights;
+	lights.push_back(&light1);
+	lights.push_back(&light2);
+
 	time_elapsed = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	teapot1.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
-	teapot2.draw(cam.viewMat, cam.projMat, light1.transform.position, time_elapsed);
+	teapot1.draw(cam.viewMat, cam.projMat, lights, time_elapsed);
+	teapot2.draw(cam.viewMat, cam.projMat, lights, time_elapsed);
 
 	glutSwapBuffers();
 }

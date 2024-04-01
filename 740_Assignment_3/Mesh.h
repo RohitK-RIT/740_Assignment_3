@@ -18,8 +18,10 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "Object.h"
+#include "PointLight.h"
 
 using namespace std;
 using namespace glm;
@@ -50,9 +52,9 @@ public:
 	/* Load the mesh from an '.obj' file. All faces need to be triangles.
 	   Attributes like edge lengths and curvatures should be computed when simplifying the mesh.
 	*/
-	void create(const char* filename, const vec3& position, const char* v_shader_file, const char* f_shader_file);
+	void create(const char* filename, const vec3& position, const vec3& scale, const char* v_shader_file, const char* f_shader_file);
 
-	void draw(mat4 viewMat, mat4 projMat, vec3 lightPos, float time);
+	void draw(mat4 viewMat, mat4 projMat, vector<PointLight*> lights, float time);
 
 private:
 	void computeNormals(); // compute both face and vertex normals
