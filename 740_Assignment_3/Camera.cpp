@@ -358,12 +358,10 @@ void Camera::CameraZoom()
 	if (dir > 0.0f)
 	{
 		eye += eye * M_ZOOM_PAR;
-		//lookat += eye * M_ZOOM_PAR; //this makes the lookat move along eye-lookat 
 	}
 	else
 	{
 		eye -= eye * M_ZOOM_PAR;
-		//lookat -= eye * M_ZOOM_PAR; //this makes the lookat move along eye-lookat 
 	}
 	eye += lookat;
 }
@@ -387,19 +385,6 @@ void Camera::GetCamCS()
 	axis_u = normalize(axis_u);
 	axis_v = vec4(cross(vec3(axis_n), vec3(axis_u)), 0.0f);
 	axis_v = normalize(axis_v);
-
-	//float t[16];
-	//glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();
-	//glGetFloatv(GL_MODELVIEW_MATRIX, t);
-	//glPopMatrix();
-	//viewMat = make_mat4(t);
-
-	//glMatrixMode(GL_PROJECTION);
-	//glPushMatrix();
-	//glGetFloatv(GL_PROJECTION_MATRIX, t);
-	//glPopMatrix();
-	//projMat = make_mat4(t);
 }
 
 void Camera::GetViewFrustum()
